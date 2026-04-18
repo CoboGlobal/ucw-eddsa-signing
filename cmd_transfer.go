@@ -160,7 +160,7 @@ Examples:
 	fmt.Printf("submitted\n")
 	fmt.Println()
 	fmt.Printf("  Transaction: %s\n", txSig)
-	fmt.Printf("  Explorer:    https://solscan.io/tx/%s\n", txSig)
+	fmt.Printf("  Explorer:    %s\n", solscanTxURL(rpcURL, txSig))
 	fmt.Println()
 
 	fmt.Print("Waiting for confirmation... ")
@@ -172,5 +172,19 @@ Examples:
 		fmt.Printf("%s\n", status)
 		fmt.Println()
 		fmt.Println("Transfer complete!")
+	}
+}
+
+// solscanTxURL returns the Solscan explorer URL for a transaction signature,
+// picking the cluster query param based on the RPC endpoint.
+func solscanTxURL(rpcURL, txSig string) string {
+	lower := strings.ToLower(rpcURL)
+	switch {
+	case strings.Contains(lower, "devnet"):
+		return fmt.Sprintf("https://solscan.io/tx/%s?cluster=devnet", txSig)
+	case strings.Contains(lower, "testnet"):
+		return fmt.Sprintf("https://solscan.io/tx/%s?cluster=testnet", txSig)
+	default:
+		return fmt.Sprintf("https://solscan.io/tx/%s", txSig)
 	}
 }
